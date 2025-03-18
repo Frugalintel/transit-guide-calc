@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transit Time Calculator</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Transit Time Calculator</h1>
+        <div class="calculator">
+            <div class="input-group">
+                <label for="packDate">Pack Date (optional):</label>
+                <input type="date" id="packDate">
+            </div>
+            <div class="input-group">
+                <label for="loadDate">Load Date:</label>
+                <input type="date" id="loadDate" required>
+            </div>
+            <div class="input-group">
+                <label for="weight">Shipment Weight (lbs):</label>
+                <input type="number" id="weight" min="1" placeholder="Enter weight">
+            </div>
+            <div class="input-group">
+                <label for="distance">Distance (miles):</label>
+                <input type="number" id="distance" min="1" placeholder="Enter distance">
+            </div>
+            <button onclick="calculateTransitTime()">Calculate RDD</button>
+            <div class="result" id="result">
+                <div class="result-item">
+                    <h3>Season Status:</h3>
+                    <p id="season-status" class="season-status">--</p>
+                </div>
+                <div class="result-item">
+                    <h3>Transit Time:</h3>
+                    <p><span id="transit-days">--</span> days</p>
+                </div>
+                <div class="result-item">
+                    <h3>Required Delivery Date (RDD):</h3>
+                    <div class="rdd-container">
+                        <p id="delivery-date">--</p>
+                        <button id="copy-dates" class="copy-button" onclick="copyDates()" title="Copy Dates">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="instructions">
+            <h3>Spreadsheet Integration:</h3>
+            <p>To use this calculator from your spreadsheet:</p>
+            <ol>
+                <li>Create a hyperlink with this format:
+                    <code>${window.location.origin}${window.location.pathname}?loadDate=YYYY-MM-DD&weight=1000&distance=500</code>
+                </li>
+                <li>Replace the values with cell references in your spreadsheet</li>
+                <li>Click the copy button to copy the dates</li>
+            </ol>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html> 

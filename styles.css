@@ -1,0 +1,335 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Courier New', monospace;
+}
+
+:root {
+    --matrix-green: #0fba0f;
+    --matrix-dark: #001200;
+    --matrix-glow: rgba(15, 186, 15, 0.4);
+    --matrix-border: rgba(15, 186, 15, 0.3);
+}
+
+body {
+    background-color: #000000;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--matrix-green);
+    position: relative;
+    overflow: hidden;
+    padding: 20px;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(var(--matrix-dark), #000);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.container {
+    width: 100%;
+    max-width: 600px;
+    position: relative;
+    z-index: 2;
+    margin: auto;
+}
+
+h1 {
+    color: var(--matrix-green);
+    text-align: center;
+    margin-bottom: 20px;
+    text-shadow: 0 0 8px var(--matrix-glow);
+    letter-spacing: 3px;
+    font-size: clamp(24px, 5vw, 28px);
+    font-weight: 600;
+}
+
+.calculator {
+    background-color: rgba(0, 12, 0, 0.95);
+    padding: clamp(20px, 4vw, 35px);
+    border-radius: 12px;
+    box-shadow: 0 0 30px rgba(0, 18, 0, 0.5);
+    border: 1px solid var(--matrix-border);
+}
+
+.input-group {
+    margin-bottom: clamp(15px, 3vw, 25px);
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--matrix-green);
+    font-weight: 500;
+    text-shadow: 0 0 3px var(--matrix-glow);
+    font-size: clamp(14px, 3vw, 15px);
+    letter-spacing: 0.5px;
+}
+
+input {
+    width: 100%;
+    padding: clamp(10px, 2vw, 14px);
+    background-color: rgba(0, 24, 0, 0.95);
+    border: 1px solid var(--matrix-border);
+    border-radius: 8px;
+    font-size: clamp(14px, 3vw, 16px);
+    color: var(--matrix-green);
+    transition: all 0.3s ease;
+    font-family: 'Courier New', monospace;
+}
+
+input:focus {
+    outline: none;
+    box-shadow: 0 0 15px rgba(15, 186, 15, 0.15);
+    background-color: rgba(0, 28, 0, 0.95);
+    border-color: var(--matrix-green);
+}
+
+input[type="date"] {
+    font-family: 'Courier New', monospace;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+button {
+    width: 100%;
+    padding: clamp(12px, 2.5vw, 16px);
+    background-color: rgba(15, 186, 15, 0.15);
+    color: var(--matrix-green);
+    border: 1px solid var(--matrix-border);
+    border-radius: 8px;
+    font-size: clamp(14px, 3vw, 16px);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-shadow: 0 0 3px var(--matrix-glow);
+    font-family: 'Courier New', monospace;
+    letter-spacing: 1px;
+}
+
+button:hover {
+    background-color: rgba(15, 186, 15, 0.25);
+    box-shadow: 0 0 20px rgba(15, 186, 15, 0.2);
+    border-color: var(--matrix-green);
+}
+
+.result {
+    margin-top: clamp(20px, 4vw, 25px);
+    padding: clamp(15px, 3vw, 25px);
+    background-color: rgba(0, 16, 0, 0.95);
+    border-radius: 8px;
+    border: 1px solid var(--matrix-border);
+}
+
+.result-item {
+    text-align: center;
+    margin-bottom: clamp(15px, 3vw, 20px);
+    padding: 8px;
+}
+
+.result-item:last-child {
+    margin-bottom: 0;
+}
+
+.result-item h3 {
+    color: var(--matrix-green);
+    font-size: clamp(14px, 3vw, 16px);
+    margin-bottom: 8px;
+    text-shadow: 0 0 3px var(--matrix-glow);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.result-item p {
+    color: var(--matrix-green);
+    font-size: clamp(18px, 4vw, 22px);
+    font-weight: 700;
+    text-shadow: 0 0 5px var(--matrix-glow);
+    letter-spacing: 1px;
+}
+
+#transit-days {
+    color: var(--matrix-green);
+    font-weight: 700;
+}
+
+.season-status {
+    padding: 6px 16px;
+    border-radius: 6px;
+    display: inline-block;
+    letter-spacing: 1px;
+    font-size: clamp(14px, 3vw, 16px);
+}
+
+.season-status.peak {
+    background-color: rgba(186, 15, 15, 0.15);
+    border: 1px solid rgba(186, 15, 15, 0.3);
+    color: #ff6b6b;
+    text-shadow: 0 0 5px rgba(255, 107, 107, 0.4);
+}
+
+.season-status.non-peak {
+    background-color: rgba(15, 186, 15, 0.15);
+    border: 1px solid var(--matrix-border);
+    color: var(--matrix-green);
+    text-shadow: 0 0 5px var(--matrix-glow);
+}
+
+.rdd-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+
+.copy-button {
+    width: auto;
+    padding: 8px;
+    background-color: rgba(15, 186, 15, 0.15);
+    border: 1px solid var(--matrix-border);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.copy-button:hover {
+    background-color: rgba(15, 186, 15, 0.25);
+    box-shadow: 0 0 15px rgba(15, 186, 15, 0.2);
+    border-color: var(--matrix-green);
+}
+
+.copy-button svg {
+    display: block;
+    color: var(--matrix-green);
+    width: clamp(14px, 3vw, 16px);
+    height: clamp(14px, 3vw, 16px);
+}
+
+.copy-button.copied {
+    background-color: rgba(15, 186, 15, 0.3);
+    border-color: var(--matrix-green);
+}
+
+.copy-button.copied svg {
+    color: var(--matrix-green);
+}
+
+/* Tooltip styles */
+.copy-button[title]:hover::after {
+    content: attr(title);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 6px 10px;
+    background-color: rgba(0, 24, 0, 0.98);
+    color: var(--matrix-green);
+    border: 1px solid var(--matrix-border);
+    border-radius: 6px;
+    font-size: clamp(12px, 2.5vw, 13px);
+    white-space: nowrap;
+    z-index: 10;
+    margin-bottom: 8px;
+    text-shadow: 0 0 3px var(--matrix-glow);
+    letter-spacing: 0.5px;
+}
+
+/* Matrix glow effect */
+@keyframes glow {
+    0% { text-shadow: 0 0 3px var(--matrix-glow); }
+    50% { text-shadow: 0 0 10px var(--matrix-glow); }
+    100% { text-shadow: 0 0 3px var(--matrix-glow); }
+}
+
+h1, .result-item p {
+    animation: glow 3s infinite;
+}
+
+.instructions {
+    margin-top: clamp(20px, 4vw, 30px);
+    padding: clamp(15px, 3vw, 20px);
+    background-color: rgba(0, 16, 0, 0.95);
+    border-radius: 8px;
+    border: 1px solid var(--matrix-border);
+}
+
+.instructions h3 {
+    color: var(--matrix-green);
+    margin-bottom: 12px;
+    text-shadow: 0 0 3px var(--matrix-glow);
+    font-size: clamp(14px, 3vw, 16px);
+}
+
+.instructions p {
+    color: var(--matrix-green);
+    margin-bottom: 12px;
+    font-size: clamp(14px, 3vw, 15px);
+}
+
+.instructions ol {
+    color: var(--matrix-green);
+    padding-left: 20px;
+    font-size: clamp(14px, 3vw, 15px);
+}
+
+.instructions li {
+    margin-bottom: 8px;
+}
+
+.instructions code {
+    display: block;
+    padding: 8px;
+    margin: 8px 0;
+    background-color: rgba(15, 186, 15, 0.1);
+    border: 1px solid var(--matrix-border);
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    word-break: break-all;
+    color: var(--matrix-green);
+    font-size: clamp(12px, 2.5vw, 14px);
+}
+
+/* Remove number input spinners */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type="number"] {
+    -moz-appearance: textfield; /* Firefox */
+}
+
+/* Media Queries */
+@media (max-width: 480px) {
+    body {
+        padding: 10px;
+    }
+    
+    .calculator {
+        padding: 15px;
+    }
+    
+    .result {
+        padding: 15px;
+    }
+    
+    .rdd-container {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .copy-button {
+        margin-top: 8px;
+    }
+} 
