@@ -478,7 +478,7 @@ button {
     font-size: var(--font-md);
     font-weight: 400;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
     text-shadow: 0 0 4px var(--pip-glow);
     font-family: 'MonofontoRegular', 'Share Tech Mono', 'FixedsysTTF', monospace;
     letter-spacing: 1px;
@@ -492,31 +492,26 @@ button {
 
 /* Common hover effect for all clickable elements */
 button:hover, .copy-button:hover, .copy-format:hover, .settings-menu .close-button:hover, .preset-color:hover {
-    background-color: hsla(calc(var(--pip-hue) + 180), 25%, 10%, 0.9);
-    box-shadow: 0 0 15px hsla(var(--pip-hue), var(--pip-saturation), var(--pip-lightness), 0.8), 
-                inset 0 0 5px hsla(var(--pip-hue), var(--pip-saturation), var(--pip-lightness), 0.8);
-    border-color: hsl(var(--pip-hue), var(--pip-saturation), var(--pip-lightness));
+    background-color: var(--pip-green);
+    color: #000;
+    text-shadow: none;
+    border-color: var(--pip-green);
     transition: all 0.2s ease;
-    text-shadow: 0 0 8px hsla(var(--pip-hue), var(--pip-saturation), var(--pip-lightness), 0.8), 
-                 0 0 12px hsla(var(--pip-hue), var(--pip-saturation), var(--pip-lightness), 0.4);
-    animation: button-glow-pulse 2s infinite ease-in-out;
 }
 
-/* Custom animation for button glow effect */
+/* Remove old button glow pulse animation */
 @keyframes button-glow-pulse {
     0%, 100% { 
-        box-shadow: 0 0 15px hsla(var(--pip-hue), var(--pip-saturation), var(--pip-lightness), 0.8), 
-                   inset 0 0 5px hsla(var(--pip-hue), var(--pip-saturation), var(--pip-lightness), 0.8); 
+        box-shadow: none;
     }
     50% { 
-        box-shadow: 0 0 20px hsla(var(--pip-hue), var(--pip-saturation), var(--pip-lightness), 0.8), 
-                   inset 0 0 8px hsla(var(--pip-hue), var(--pip-saturation), var(--pip-lightness), 0.8); 
+        box-shadow: none;
     }
 }
 
 /* Original individual button hover styles that need to be overridden */
 button:hover {
-    color: hsl(var(--pip-hue), var(--pip-saturation), var(--pip-lightness));
+    color: #000;
 }
 
 .result {
@@ -785,7 +780,7 @@ button:hover {
     border: 1px solid var(--pip-border);
     border-radius: 0;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -801,11 +796,12 @@ button:hover {
     height: var(--font-lg);
     position: relative;
     z-index: 2;
+    transition: all 0.2s ease;
 }
 
 .copy-button:hover svg {
-    color: var(--pip-green);
-    filter: drop-shadow(0 0 3px var(--pip-glow));
+    color: #000;
+    filter: none;
 }
 
 .copy-format {
@@ -820,7 +816,7 @@ button:hover {
     letter-spacing: 1px;
     text-transform: uppercase;
     border-radius: 0;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
     appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
@@ -831,6 +827,42 @@ button:hover {
     height: 36px;
     position: relative;
     z-index: 10;
+}
+
+/* Single, consolidated hover style for copy-format */
+.copy-format:hover {
+    background-color: var(--pip-green);
+    color: #000;
+    text-shadow: none;
+    border-color: var(--pip-green);
+    transition: all 0.2s ease;
+}
+
+/* Enhance the dropdown arrow color on hover - override all previous styles */
+.copy-format:hover + .select-arrow {
+    border-top-color: #000 !important;
+    filter: none !important;
+    transform: translateY(-50%) !important;
+}
+
+/* Fix double hover style to ensure arrow stays black */
+.copy-button:hover svg {
+    color: #000;
+    filter: none;
+}
+
+/* Fix copied state to match hover style */
+.copy-button.copied {
+    background-color: var(--pip-green);
+    color: #000;
+    text-shadow: none;
+    border-color: var(--pip-green);
+    box-shadow: none;
+    animation: none;
+}
+
+.copy-button.copied svg {
+    color: #000;
 }
 
 .select-wrapper {
@@ -850,39 +882,14 @@ button:hover {
     border-right: 5px solid transparent;
     border-top: 5px solid var(--pip-green);
     pointer-events: none;
-    transition: all 0.3s ease;
-}
-
-/* Single, consolidated hover style for copy-format */
-.copy-format:hover {
-    background: hsla(calc(var(--pip-hue) + 180), 25%, 8%, 0.9);
-    box-shadow: 0 0 15px hsla(var(--pip-hue), var(--pip-saturation), var(--pip-lightness), 0.8), 
-                inset 0 0 5px hsla(var(--pip-hue), var(--pip-saturation), var(--pip-lightness), 0.8);
-    border-color: hsl(var(--pip-hue), var(--pip-saturation), var(--pip-lightness));
-    color: hsl(var(--pip-hue), var(--pip-saturation), var(--pip-lightness));
-    text-shadow: 0 0 2px hsla(var(--pip-hue), var(--pip-saturation), var(--pip-lightness), 0.8), 
-                 0 0 4px hsla(var(--pip-hue), var(--pip-saturation), var(--pip-lightness), 0.6),
-                 0 0 8px hsla(var(--pip-hue), var(--pip-saturation), var(--pip-lightness), 0.15);
-    animation: button-glow-pulse 2s infinite ease-in-out;
-    transform: translateY(-1px);
-    letter-spacing: 1.2px;
-    transition: all 0.3s ease;
-}
-
-/* Enhance the dropdown arrow glow to match the format text */
-.copy-format:hover + .select-arrow {
-    border-top-color: hsl(var(--pip-hue), var(--pip-saturation), var(--pip-lightness));
-    filter: drop-shadow(0 0 2px hsla(var(--pip-hue), var(--pip-saturation), var(--pip-lightness), 0.8)) 
-            drop-shadow(0 0 4px hsla(var(--pip-hue), var(--pip-saturation), var(--pip-lightness), 0.6));
-    transform: translateY(-1px);
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
 }
 
 /* Remove duplicate hover styles */
 .copy-format:hover + .select-arrow {
-    border-top-color: hsl(var(--pip-hue), calc(var(--pip-saturation) + 5%), calc(var(--pip-lightness) + 8%)) !important;
-    filter: drop-shadow(0 0 8px var(--pip-glow)) drop-shadow(0 0 12px var(--pip-glow)) !important;
-    transform: translateY(-1px) !important;
+    border-top-color: #000 !important;
+    filter: none !important;
+    transform: translateY(-50%) !important;
 }
 
 .copy-format option {
@@ -894,13 +901,13 @@ button:hover {
 
 .copy-format:focus {
     outline: none;
-    box-shadow: 0 0 15px var(--pip-glow);
+    box-shadow: 0 0 5px var(--pip-glow);
     border-color: var(--pip-green);
 }
 
 .copy-button:hover svg {
-    color: var(--pip-green);
-    filter: drop-shadow(0 0 3px var(--pip-glow));
+    color: #000;
+    filter: none;
 }
 
 .copy-button.copied {
@@ -1234,6 +1241,14 @@ button:hover {
     justify-content: center;
     text-shadow: 0 0 3px var(--pip-glow);
     position: static;
+    transition: all 0.2s ease;
+}
+
+.settings-menu .close-button:hover {
+    background-color: var(--pip-green);
+    color: #000;
+    text-shadow: none;
+    border-color: var(--pip-green);
 }
 
 .settings-overlay {
@@ -1336,35 +1351,38 @@ button:hover {
     min-width: 50px;
     text-align: center;
     box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.5);
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
     position: relative;
     display: inline-block;
     margin-left: auto;
-    text-shadow: none; /* Remove text shadow */
+    text-shadow: none;
     opacity: 1;
 }
 
+/* Remove hover effect for toggle buttons */
 .toggle-text:hover {
-    background: hsla(calc(var(--pip-hue) + 180), 25%, 8%, 0.9);
-    box-shadow: 0 0 15px hsla(var(--pip-hue), var(--pip-saturation), var(--pip-lightness), 0.8),
-                inset 0 0 5px hsla(var(--pip-hue), var(--pip-saturation), var(--pip-lightness), 0.8);
-    border-color: hsl(var(--pip-hue), var(--pip-saturation), var(--pip-lightness));
-    text-shadow: 0 0 8px hsla(var(--pip-hue), var(--pip-saturation), var(--pip-lightness), 0.8);
+    background-color: var(--pip-dark);
+    color: var(--pip-green);
+    border-color: var(--pip-border);
+    box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.5);
 }
 
 .toggle-text.active {
-    background: var(--pip-green);
-    color: var(--pip-darker); /* Darker text color for better contrast */
+    background-color: var(--pip-green);
+    color: #000;
     text-shadow: none;
-    box-shadow: none; /* Remove glow effect */
+    border-color: var(--pip-green);
+    box-shadow: none;
     font-weight: bold;
     opacity: 1;
 }
 
+/* Remove hover effect for active toggle buttons */
 .toggle-text.active:hover {
-    background: hsl(var(--pip-hue), calc(var(--pip-saturation) + 10%), calc(var(--pip-lightness) + 10%));
-    box-shadow: 0 0 15px var(--pip-glow),
-                inset 0 0 5px rgba(0, 0, 0, 0.3);
+    background-color: var(--pip-green);
+    color: #000;
+    border-color: var(--pip-green);
+    box-shadow: none;
 }
 
 .color-preview {
@@ -1391,6 +1409,7 @@ button:hover {
     cursor: pointer;
     transition: all 0.3s ease;
 }
+
 
 @keyframes flicker {
     0% { opacity: 1; }
