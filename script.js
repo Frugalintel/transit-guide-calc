@@ -400,6 +400,12 @@ async function copyDates() {
             text += `Pack: ${packDateFormatted}\n`;
         }
         text += `Load: ${loadDateFormatted}\nRDD: ${rddDateFormatted}\n\nJPPSO, please update the planned dates in DPS and on GBL.`;
+    } else if (copyFormat === 'isnp') {
+        text = `Hello,\n\nThe agent(s) can accommodate your requested date change. Your new dates are as follows-\n\n`;
+        if (packDateFormatted) {
+            text += `Pack: ${packDateFormatted}\n`;
+        }
+        text += `Load: ${loadDateFormatted}\nRDD: ${rddDateFormatted}`;
     } else if (copyFormat === 'simple') {
         if (packDateFormatted) {
             text += `Pack: ${packDateFormatted}\n`;
