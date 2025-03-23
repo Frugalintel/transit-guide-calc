@@ -406,6 +406,12 @@ async function copyDates() {
             text += `Pack: ${packDateFormatted}\n`;
         }
         text += `Load: ${loadDateFormatted}\nRDD: ${rddDateFormatted}`;
+    } else if (copyFormat === 'dpsr') {
+        if (packDateFormatted) {
+            text = `This shipment will now Pack ${packDateFormatted} and Load ${loadDateFormatted}, per member request.`;
+        } else {
+            text = `This shipment will now Load ${loadDateFormatted}, per member request.`;
+        }
     } else if (copyFormat === 'simple') {
         if (packDateFormatted) {
             text += `Pack: ${packDateFormatted}\n`;
