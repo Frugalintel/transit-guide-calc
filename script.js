@@ -393,7 +393,7 @@ async function copyDates() {
         if (packDateFormatted) {
             text += `Pack: ${packDateFormatted}\n`;
         }
-        text += `Pickup: ${earliestLoadDate} - ${latestLoadDate}\nRDD: ${rddDateFormatted}`;
+        text += `Load: ${loadDateFormatted}\nRDD: ${rddDateFormatted}\n\nJPPSO, please update the planned dates in DPS and on GBL as well as issue the spread override due to member/base convenience.`;
     } else if (copyFormat === 'simple') {
         if (packDateFormatted) {
             text += `Pack: ${packDateFormatted}\n`;
