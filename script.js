@@ -387,7 +387,7 @@ async function copyDates() {
         if (packDateFormatted) {
             text += `Pack: ${packDateFormatted}\n`;
         }
-        text += `Pickup: ${loadDateFormatted}\nRDD: ${rddDateFormatted}`;
+        text += `Load: ${loadDateFormatted}\nRDD: ${rddDateFormatted}\n\nJPPSO, please update DPS to reflect the Earliest Pickup Date of ${earliestLoadDate} and Latest Pickup Date of ${latestLoadDate}`;
     } else if (copyFormat === 'osp') {
         text = `Hello,\n\nThe agent(s) can accommodate your requested date change. Your new dates are as follows-\n\n`;
         if (packDateFormatted) {
