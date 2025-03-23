@@ -2211,3 +2211,46 @@ h1, .season-status, #transit-days, #delivery-date {
     font-family: 'Share Tech Mono', monospace;
     text-shadow: 0 0 10px var(--pip-green);
 }
+
+.status-indicator.blink {
+    animation: blink 4.2s step-end infinite;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    15% { opacity: 1; }
+    16% { opacity: 0; }
+    17% { opacity: 1; }
+    18% { opacity: 0; }
+    19% { opacity: 1; }
+    20% { opacity: 0; }
+    21% { opacity: 1; }
+    45% { opacity: 1; }
+    46% { opacity: 0; }
+    47% { opacity: 1; }
+    48% { opacity: 0; }
+    49% { opacity: 1; }
+    51% { opacity: 1; }
+    52% { opacity: 0; }
+    53% { opacity: 1; }
+    75% { opacity: 1; }
+    76% { opacity: 0; }
+    77% { opacity: 1; }
+    85% { opacity: 1; }
+    86% { opacity: 0; }
+    87% { opacity: 1; }
+    88% { opacity: 0; }
+    89% { opacity: 1; }
+}
+
+.boot-sequence p::after {
+    display: none !important;
+}
+
+.boot-sequence p.loading::before {
+    display: none !important;
+}
+
+.boot-sequence p {
+    padding-left: 0 !important;
+}
