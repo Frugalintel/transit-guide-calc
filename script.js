@@ -382,23 +382,46 @@ async function copyDates() {
     const latestLoadDate = formatDateForCopy(loadSpread.latest);
     
     // Format the text based on the selected format
-    if (copyFormat === 'osnp') {
-        text = `Hello,\n\nThe agent(s) can accommodate your requested date change. Your new dates are as follows-\n\n`;
-        if (packDateFormatted) {
-            text += `Pack: ${packDateFormatted}\n`;
-        }
-        text += `Pickup: ${loadDateFormatted}\nRDD: ${rddDateFormatted}`;
-    } else if (copyFormat === 'osp') {
-        text = `Hello,\n\nThe agent(s) can accommodate your requested date change. Your new dates are as follows-\n\n`;
-        if (packDateFormatted) {
-            text += `Pack: ${packDateFormatted}\n`;
-        }
-        text += `Pickup: ${earliestLoadDate} - ${latestLoadDate}\nRDD: ${rddDateFormatted}`;
-    } else if (copyFormat === 'simple') {
-        if (packDateFormatted) {
-            text += `Pack: ${packDateFormatted}\n`;
-        }
-        text += `Pickup: ${loadDateFormatted}\nRDD: ${rddDateFormatted}`;
+    switch(copyFormat) {
+        case 'osnp':
+        case 'isnp':
+            text = `Hello,\n\nThe agent(s) can accommodate your requested date change. Your new dates are as follows-\n\n`;
+            if (packDateFormatted) {
+                text += `Pack: ${packDateFormatted}\n`;
+            }
+            text += `Pickup: ${loadDateFormatted}\nRDD: ${rddDateFormatted}`;
+            if (copyFormat === 'isnp') {
+                text += `\n\nPlease update DPS and GBL to reflect the newly agreed on dates that are within spread.`;
+            }
+            break;
+            
+        case 'osp':
+        case 'isp':
+            text = `Hello,\n\nThe agent(s) can accommodate your requested date change. Your new dates are as follows-\n\n`;
+            if (packDateFormatted) {
+                text += `Pack: ${packDateFormatted}\n`;
+            }
+            text += `Pickup: ${earliestLoadDate} - ${latestLoadDate}\nRDD: ${rddDateFormatted}`;
+            if (copyFormat === 'isp') {
+                text += `\n\nPlease update DPS and GBL to reflect the newly agreed on dates that are within spread.`;
+            }
+            break;
+            
+        case 'dpsr':
+            text = `Hello,\n\nThe agent(s) can accommodate your requested date change. Your new dates are as follows-\n\n`;
+            if (packDateFormatted) {
+                text += `Pack: ${packDateFormatted}\n`;
+            }
+            text += `Pickup: ${loadDateFormatted}\nRDD: ${rddDateFormatted}\n\nJPPSO, please update DPS and GBL to reflect the newly agreed on dates that are within spread.`;
+            break;
+            
+        case 'simple':
+        default:
+            if (packDateFormatted) {
+                text += `Pack: ${packDateFormatted}\n`;
+            }
+            text += `Pickup: ${loadDateFormatted}\nRDD: ${rddDateFormatted}`;
+            break;
     }
 
     try {
