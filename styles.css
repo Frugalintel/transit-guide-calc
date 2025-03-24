@@ -411,6 +411,7 @@ input {
     color: var(--pip-green);
     font-size: var(--font-md);
     font-family: 'MonofontoRegular', 'Share Tech Mono', 'FixedsysTTF', monospace;
+    text-shadow: 0 0 2px var(--pip-glow), 0 0 4px hsla(var(--pip-hue), var(--pip-saturation), var(--pip-lightness), 0.2);
 }
 
 /* Remove number input spinners */
@@ -448,6 +449,36 @@ input[type="date"].filled::-webkit-datetime-edit-month-field,
 input[type="date"].filled::-webkit-datetime-edit-day-field {
     color: var(--pip-green);
 }
+
+/* NEW FIX STARTS HERE */
+/* Remove glow from unfilled date inputs */
+input[type="date"]::-webkit-datetime-edit,
+input[type="date"]::-webkit-datetime-edit-year-field,
+input[type="date"]::-webkit-datetime-edit-month-field,
+input[type="date"]::-webkit-datetime-edit-day-field {
+    text-shadow: none;
+}
+
+/* Ensure glow applies only to filled date inputs */
+input[type="date"].filled::-webkit-datetime-edit,
+input[type="date"].filled::-webkit-datetime-edit-year-field,
+input[type="date"].filled::-webkit-datetime-edit-month-field,
+input[type="date"].filled::-webkit-datetime-edit-day-field {
+    text-shadow: 0 0 2px var(--pip-glow), 0 0 4px hsla(var(--pip-hue), var(--pip-saturation), var(--pip-lightness), 0.2);
+}
+
+/* Remove glow from unfilled number inputs and set default grey color */
+input[type="number"] {
+    text-shadow: none;
+    color: #666; /* Explicitly set grey for unfilled state */
+}
+
+/* Apply glow to filled number inputs */
+input[type="number"]:valid {
+    text-shadow: 0 0 2px var(--pip-glow), 0 0 4px hsla(var(--pip-hue), var(--pip-saturation), var(--pip-lightness), 0.2);
+    color: var(--pip-green); /* Already in your CSS, repeated for clarity */
+}
+/* NEW FIX ENDS HERE */
 
 input:focus {
     outline: none;
