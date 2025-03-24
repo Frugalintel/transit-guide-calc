@@ -39,14 +39,14 @@
     --pip-shadow: hsla(var(--pip-hue), var(--pip-saturation), var(--pip-lightness), 0.4);
     --pip-bg: hsl(calc(var(--pip-hue) + 180), 30%, 4%);
     --scanline-opacity: 0.15;
-    --scanline-size: 1px;
+    --scanline-size: 1px; /* Adjusted for thinner, more authentic scanlines */
     --crt-flicker: 0.98;
     --screen-curve: 0deg;
     --screen-blur: 0.3px;
-    --animations-enabled: 1;
-    --static-noise-opacity: 0.035;
-    --vault-tec-opacity: 0.1;
-    --pip-screw-size: 10px;
+    --animations-enabled: 1; /* 1 for enabled, 0 for disabled */
+    --static-noise-opacity: 0.035; /* Controls the static noise overlay intensity */
+    --vault-tec-opacity: 0.1; /* Controls the opacity of the Vault-Tec logo */
+    --pip-screw-size: 10px; /* Size of the decorative screws */
     
     /* Layout */
     --max-width: min(98vw, 800px);
@@ -61,7 +61,7 @@
     --spacing-md: min(1.5vw, 0.75rem);
     --spacing-lg: min(2vw, 1rem);
     
-    /* Font Sizes */
+    /* Font Sizes - Smaller sizes */
     --font-xs: min(2.2vw, 0.84rem);
     --font-sm: min(2.6vw, 0.92rem);
     --font-md: min(3.1vw, 1.05rem);
@@ -151,6 +151,38 @@ body::after {
     50% { opacity: calc(0.5 * var(--animations-enabled)); }
 }
 
+@keyframes scanline-drift {
+    0% { background-position: 0 0; }
+    25% { background-position: 0 30px; }
+    50% { background-position: 0 80px; }
+    75% { background-position: 0 150px; }
+    100% { background-position: 0 200px; }
+}
+
+/* Add the horizontal scan effect */
+.container::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    right: 0;
+    bottom: 0;
+    width: 300%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        hsla(var(--pip-hue), var(--pip-saturation), var(--pip-lightness), 0.01) 10%,
+        hsla(var(--pip-hue), var(--pip-saturation), var(--pip-lightness), 0.05) 20%,
+        hsla(var(--pip-hue), var(--pip-saturation), var(--pip-lightness), 0.03) 30%,
+        transparent 50%
+    );
+    pointer-events: none;
+    z-index: 4;
+    animation: fallout-scan calc(5s * var(--animations-enabled)) linear infinite;
+    mix-blend-mode: screen;
+}
+
 .container {
     width: 100%;
     height: var(--container-height);
@@ -178,9 +210,11 @@ body::after {
                 inset 0 0 5px var(--pip-glow);
     border-radius: var(--border-radius);
     backdrop-filter: blur(var(--screen-blur));
+    /* Keep the flicker effect but make it more subtle */
     animation: subtle-flicker calc(8s * var(--animations-enabled)) infinite ease-in-out;
 }
 
+/* Create a more stable inner container for the content with the scanlines */
 .container::before {
     content: '';
     position: absolute;
@@ -188,13 +222,17 @@ body::after {
     left: 0;
     right: 0;
     bottom: 0;
+    width: 100%;
+    height: 100%;
     border: 2px solid var(--pip-border);
     border-radius: var(--border-radius);
     box-shadow: 0 0 10px var(--pip-glow);
     pointer-events: none;
-    z-index: 10;
-    animation: noise-animation calc(0.2s * var(--animations-enabled)) infinite steps(2);
+    z-index: 10; /* Above scan effects */
 }
+    .container::before {
+        animation: noise-animation calc(0.2s * var(--animations-enabled)) infinite steps(2);
+    }
 
 @keyframes noise-animation {
     0% { transform: translate(0, 0); }
@@ -210,6 +248,7 @@ body::after {
     100% { transform: translate(0, 0); }
 }
 
+/* Add Pip-Boy interface elements */
 .pip-screw {
     position: absolute;
     width: var(--pip-screw-size);
@@ -226,6 +265,7 @@ body::after {
 .pip-screw-bl { bottom: 5px; left: 5px; }
 .pip-screw-br { bottom: 5px; right: 5px; }
 
+/* Add Vault-Tec logo watermark */
 .vault-tec-logo {
     position: absolute;
     bottom: 15px;
@@ -348,7 +388,7 @@ h1 {
     box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.5);
     flex-shrink: 0;
     position: relative;
-    z-index: 3;
+    z-index: 3; /* Ensure it's above scanlines */
 }
 
 label {
@@ -373,55 +413,6 @@ input {
     font-family: 'MonofontoRegular', 'Share Tech Mono', 'FixedsysTTF', monospace;
 }
 
-/* Default state for empty inputs (no glow) */
-input:placeholder-shown,
-input:not(.filled) {
-    box-shadow: none;
-    text-shadow: none;
-}
-
-/* Focus state without glow unless filled */
-input:focus {
-    outline: none;
-    border-color: var(--pip-green);
-    background-color: hsla(calc(var(--pip-hue) + 180), 20%, 6%, 0.95);
-    /* Glow only applied if filled */
-}
-
-/* Filled state with glow */
-input.filled,
-input:focus.filled {
-    box-shadow: 0 0 25px var(--pip-glow);
-    text-shadow: 0 0 5px var(--pip-glow);
-}
-
-/* Ensure grey placeholder text is readable */
-input[type="date"]::-webkit-datetime-edit,
-input[type="date"]::-webkit-datetime-edit-year-field,
-input[type="date"]::-webkit-datetime-edit-month-field,
-input[type="date"]::-webkit-datetime-edit-day-field {
-    color: #666; /* Default grey */
-}
-
-/* Filled date inputs */
-input[type="date"].filled::-webkit-datetime-edit,
-input[type="date"].filled::-webkit-datetime-edit-year-field,
-input[type="date"].filled::-webkit-datetime-edit-month-field,
-input[type="date"].filled::-webkit-datetime-edit-day-field {
-    color: var(--pip-green);
-}
-
-/* Remove glow from date inputs unless filled */
-input[type="date"]:focus:not(.filled) {
-    box-shadow: none;
-    text-shadow: none;
-}
-
-/* Number inputs */
-input[type="number"]:valid {
-    color: var(--pip-green);
-}
-
 /* Remove number input spinners */
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
@@ -432,6 +423,49 @@ input[type="number"]::-webkit-outer-spin-button {
 input[type="number"] {
     -moz-appearance: textfield;
     appearance: textfield;
+}
+
+/* Filled number inputs */
+input[type="number"]:valid {
+    color: var(--pip-green);
+}
+
+/* Date inputs - Default to grey */
+input[type="date"]::-webkit-datetime-edit {
+    color: #666;
+}
+
+input[type="date"]::-webkit-datetime-edit-year-field,
+input[type="date"]::-webkit-datetime-edit-month-field,
+input[type="date"]::-webkit-datetime-edit-day-field {
+    color: #666;
+}
+
+/* Filled date inputs with .filled class */
+input[type="date"].filled::-webkit-datetime-edit,
+input[type="date"].filled::-webkit-datetime-edit-year-field,
+input[type="date"].filled::-webkit-datetime-edit-month-field,
+input[type="date"].filled::-webkit-datetime-edit-day-field {
+    color: var(--pip-green);
+}
+
+input:focus {
+    outline: none;
+    box-shadow: 0 0 25px var(--pip-glow);
+    background-color: hsla(calc(var(--pip-hue) + 180), 20%, 6%, 0.95);
+    border-color: var(--pip-green);
+    text-shadow: 0 0 5px var(--pip-glow);
+}
+
+/* Add specific override for date inputs to prevent blur effect */
+input[type="date"]:focus {
+    text-shadow: none;
+}
+
+input[type="date"] {
+    font-family: 'MonofontoRegular', 'Share Tech Mono', 'FixedsysTTF', monospace;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 button {
@@ -456,12 +490,28 @@ button {
     position: relative;
 }
 
+/* Common hover effect for all clickable elements */
 button:hover, .copy-button:hover, .copy-format:hover, .settings-menu .close-button:hover, .preset-color:hover {
     background-color: var(--pip-green);
     color: #000;
     text-shadow: none;
     border-color: var(--pip-green);
     transition: all 0.2s ease;
+}
+
+/* Remove old button glow pulse animation */
+@keyframes button-glow-pulse {
+    0%, 100% { 
+        box-shadow: none;
+    }
+    50% { 
+        box-shadow: none;
+    }
+}
+
+/* Original individual button hover styles that need to be overridden */
+button:hover {
+    color: #000;
 }
 
 .result {
@@ -477,7 +527,7 @@ button:hover, .copy-button:hover, .copy-format:hover, .settings-menu .close-butt
                 inset 0 0 3px var(--pip-glow);
     flex-shrink: 0;
     position: relative;
-    z-index: 3;
+    z-index: 3; /* Ensure it's above scanlines */
 }
 
 .result-item {
@@ -540,6 +590,7 @@ button:hover, .copy-button:hover, .copy-format:hover, .settings-menu .close-butt
     justify-content: flex-start;
     text-transform: uppercase;
     text-shadow: 0 0 3px var(--pip-glow), 0 0 8px var(--pip-shadow);
+    text-shadow: 0 0 8px var(--pip-glow), 0 0 15px var(--pip-shadow);
     animation: text-flicker calc(0.4s * var(--animations-enabled)) infinite steps(1), 
                text-glow calc(2s * var(--animations-enabled)) infinite ease-in-out;
 }
@@ -623,6 +674,7 @@ button:hover, .copy-button:hover, .copy-format:hover, .settings-menu .close-butt
                  0 0 12px rgba(0, 255, 0, 0.2);
 }
 
+/* Hide all extra effects */
 .season-status::before,
 .season-status::after,
 .season-status .power-indicator,
@@ -631,6 +683,7 @@ button:hover, .copy-button:hover, .copy-format:hover, .settings-menu .close-butt
     display: none !important;
 }
 
+/* Status indicator basic style */
 .status-indicator {
     position: relative;
     display: inline-block;
@@ -666,6 +719,7 @@ button:hover, .copy-button:hover, .copy-format:hover, .settings-menu .close-butt
     position: relative;
 }
 
+/* Add this class for very obvious Fallout terminal-style blinking */
 .fallout-blink {
     animation: fallout-blink-animation calc(1s * var(--animations-enabled)) infinite !important;
     position: relative !important;
@@ -775,6 +829,7 @@ button:hover, .copy-button:hover, .copy-format:hover, .settings-menu .close-butt
     z-index: 10;
 }
 
+/* Single, consolidated hover style for copy-format */
 .copy-format:hover {
     background-color: var(--pip-green);
     color: #000;
@@ -783,12 +838,20 @@ button:hover, .copy-button:hover, .copy-format:hover, .settings-menu .close-butt
     transition: all 0.2s ease;
 }
 
+/* Enhance the dropdown arrow color on hover - override all previous styles */
 .copy-format:hover + .select-arrow {
     border-top-color: #000 !important;
     filter: none !important;
     transform: translateY(-50%) !important;
 }
 
+/* Fix double hover style to ensure arrow stays black */
+.copy-button:hover svg {
+    color: #000;
+    filter: none;
+}
+
+/* Fix copied state to match hover style */
 .copy-button.copied {
     background-color: var(--pip-green);
     color: #000;
@@ -822,6 +885,13 @@ button:hover, .copy-button:hover, .copy-format:hover, .settings-menu .close-butt
     transition: all 0.2s ease;
 }
 
+/* Remove duplicate hover styles */
+.copy-format:hover + .select-arrow {
+    border-top-color: #000 !important;
+    filter: none !important;
+    transform: translateY(-50%) !important;
+}
+
 .copy-format option {
     background-color: var(--pip-dark);
     color: var(--pip-green);
@@ -833,6 +903,18 @@ button:hover, .copy-button:hover, .copy-format:hover, .settings-menu .close-butt
     outline: none;
     box-shadow: 0 0 5px var(--pip-glow);
     border-color: var(--pip-green);
+}
+
+.copy-button:hover svg {
+    color: #000;
+    filter: none;
+}
+
+.copy-button.copied {
+    background-color: hsla(var(--pip-hue), var(--pip-saturation), var(--pip-lightness), 0.2);
+    border-color: var(--pip-green);
+    box-shadow: 0 0 15px var(--pip-glow), inset 0 0 5px var(--pip-glow);
+    animation: button-glow-pulse 2s infinite ease-in-out;
 }
 
 .copy-button[title]:hover::after {
@@ -877,6 +959,41 @@ button:hover, .copy-button:hover, .copy-format:hover, .settings-menu .close-butt
     100% { opacity: 1; filter: brightness(1); }
 }
 
+/* Animation keyframes for authentic Fallout terminal effect */
+@keyframes scanline {
+    0% { transform: translateY(-100%); }
+    100% { transform: translateY(100%); }
+}
+
+@keyframes crt-flicker {
+    0% { opacity: 1.0; }
+    3% { opacity: 0.93; }
+    5% { opacity: 1.0; }
+    9% { opacity: 0.94; }
+    11% { opacity: 1.0; }
+    17% { opacity: 0.95; }
+    19% { opacity: 1.0; }
+    50% { opacity: 1.0; }
+    80% { opacity: 0.96; }
+    83% { opacity: 1.0; }
+    88% { opacity: 0.96; }
+    100% { opacity: 1.0; }
+}
+
+@keyframes terminal-noise {
+    0%, 100% { background-position: 0 0; }
+    10% { background-position: -5% -10%; }
+    20% { background-position: -15% 5%; }
+    30% { background-position: 7% -25%; }
+    40% { background-position: 20% 25%; }
+    50% { background-position: -25% 10%; }
+    60% { background-position: 15% 5%; }
+    70% { background-position: 0% 15%; }
+    80% { background-position: 5% 0%; }
+    90% { background-position: -10% 0%; }
+}
+
+/* Boot sequence container with !important to override other styles */
 .boot-sequence {
     position: absolute !important;
     top: 0 !important;
@@ -970,6 +1087,7 @@ button:hover, .copy-button:hover, .copy-format:hover, .settings-menu .close-butt
     z-index: 5 !important;
 }
 
+/* Add scanline effect to boot sequence text */
 .boot-sequence p::before {
     content: '' !important;
     position: absolute !important;
@@ -992,6 +1110,7 @@ button:hover, .copy-button:hover, .copy-format:hover, .settings-menu .close-butt
     opacity: calc(0.6 * var(--animations-enabled)) !important;
 }
 
+/* Add cursor before text */
 .boot-sequence p::after {
     content: '>' !important;
     position: absolute !important;
@@ -1088,15 +1207,18 @@ button:hover, .copy-button:hover, .copy-format:hover, .settings-menu .close-butt
     font-weight: 400;
 }
 
+/* Add subtle glow animation for settings header */
 @keyframes settings-glow-pulse {
     0%, 100% { text-shadow: 0 0 2px var(--pip-glow), 0 0 4px hsla(var(--pip-hue), var(--pip-saturation), var(--pip-lightness), 0.2); }
     50% { text-shadow: 0 0 3px var(--pip-glow), 0 0 6px hsla(var(--pip-hue), var(--pip-saturation), var(--pip-lightness), 0.25); }
 }
 
+/* Remove any inherited text effects for settings menu header */
 .settings-menu h2::before {
     display: none !important;
 }
 
+/* Override any global text effects for settings menu */
 .settings-menu h2,
 .settings-menu h2 * {
     animation: settings-glow-pulse 4s infinite ease-in-out !important;
@@ -1122,6 +1244,13 @@ button:hover, .copy-button:hover, .copy-format:hover, .settings-menu .close-butt
     transition: all 0.2s ease;
 }
 
+.settings-menu .close-button:hover {
+    background-color: var(--pip-green);
+    color: #000;
+    text-shadow: none;
+    border-color: var(--pip-green);
+}
+
 .settings-overlay {
     position: fixed;
     top: 0;
@@ -1143,7 +1272,7 @@ button:hover, .copy-button:hover, .copy-format:hover, .settings-menu .close-butt
     gap: var(--spacing-sm);
     padding: var(--spacing-xs) var(--spacing-sm);
     border: 1px solid var(--pip-border);
-    background: hsla(calc(var(--pip-hue) + 180), 25%, 8%, 0.95);
+    background: hsla(calc(var(--pip-hue) + 180), 25%, 8%, 0.95); /* Slightly lighter background */
 }
 
 .color-option label {
@@ -1151,11 +1280,11 @@ button:hover, .copy-button:hover, .copy-format:hover, .settings-menu .close-butt
     flex: 1;
     color: var(--pip-green);
     font-weight: 400;
-    text-shadow: none;
+    text-shadow: none; /* Remove text shadow */
     font-size: var(--font-sm);
     letter-spacing: 1px;
     text-transform: uppercase;
-    opacity: 1;
+    opacity: 1; /* Full opacity */
 }
 
 .color-option input[type="range"] {
@@ -1230,6 +1359,7 @@ button:hover, .copy-button:hover, .copy-format:hover, .settings-menu .close-butt
     opacity: 1;
 }
 
+/* Remove hover effect for toggle buttons */
 .toggle-text:hover {
     background-color: var(--pip-dark);
     color: var(--pip-green);
@@ -1247,6 +1377,7 @@ button:hover, .copy-button:hover, .copy-format:hover, .settings-menu .close-butt
     opacity: 1;
 }
 
+/* Remove hover effect for active toggle buttons */
 .toggle-text.active:hover {
     background-color: var(--pip-green);
     color: #000;
@@ -1279,32 +1410,37 @@ button:hover, .copy-button:hover, .copy-format:hover, .settings-menu .close-butt
     transition: all 0.3s ease;
 }
 
-@keyframes crt-flicker {
-    0% { opacity: 1.0; }
-    3% { opacity: 0.93; }
-    5% { opacity: 1.0; }
-    9% { opacity: 0.94; }
-    11% { opacity: 1.0; }
-    17% { opacity: 0.95; }
-    19% { opacity: 1.0; }
-    50% { opacity: 1.0; }
-    80% { opacity: 0.96; }
-    83% { opacity: 1.0; }
-    88% { opacity: 0.96; }
-    100% { opacity: 1.0; }
+
+@keyframes flicker {
+    0% { opacity: 1; }
+    1% { opacity: 0.8; }
+    2% { opacity: 1; }
+    70% { opacity: 0.9; }
+    72% { opacity: 1; }
+    100% { opacity: 1; }
+}
+
+/* This is the proper terminal-flicker keyframe animation */
+@keyframes terminal-flicker {
+    0% { opacity: 0.01; }
+    40% { opacity: 0.01; }
+    45% { opacity: 0.03; }
+    50% { opacity: 0.05; }
+    55% { opacity: 0.03; }
+    100% { opacity: 0.01; background-position: 200% 0; }
 }
 
 @media (max-width: 768px) {
     :root {
-        --scanline-size: 3px;
-        --scanline-opacity: 0.3;
+        --scanline-size: 3px; /* Adjusted from 2px for better visibility */
+        --scanline-opacity: 0.3; /* Increased from 0.2 */
     }
 }
 
 @media (max-width: 480px) {
     :root {
-        --scanline-size: 2px;
-        --scanline-opacity: 0.25;
+        --scanline-size: 2px; /* Adjusted from 1px for better visibility */
+        --scanline-opacity: 0.25; /* Increased from 0.15 */
         --max-width: 100vw;
         --container-height: 100vh;
         --spacing-xs: 0.25rem;
@@ -1318,10 +1454,12 @@ button:hover, .copy-button:hover, .copy-format:hover, .settings-menu .close-butt
         --font-xs: min(2.0vw, 0.8rem);
     }
     
+    /* Adjust text shadow for better readability on small screens */
     h1, .result-item p, .app-title, .version-number {
         text-shadow: 0 0 5px var(--pip-glow), 0 0 8px var(--pip-shadow);
     }
     
+    /* Reduce jitter amplitude on small screens */
     @keyframes jitter {
         0%, 20%, 40%, 60%, 80%, 100% { transform: translate(0, 0); }
         10% { transform: translate(-0.3px, 0.1px); }
@@ -1331,6 +1469,7 @@ button:hover, .copy-button:hover, .copy-format:hover, .settings-menu .close-butt
         90% { transform: translate(-0.1px, 0.1px); }
     }
     
+    /* Make the container background cleaner on small screens */
     .container {
         margin: 0;
         border-width: 1px;
@@ -1371,7 +1510,7 @@ button:hover, .copy-button:hover, .copy-format:hover, .settings-menu .close-butt
         min-height: 2.5em;
         flex-direction: column;
         align-items: center;
-        padding-bottom: 40px;
+        padding-bottom: 40px; /* Space for copy options */
     }
     
     .copy-options {
@@ -1538,6 +1677,11 @@ button:hover, .copy-button:hover, .copy-format:hover, .settings-menu .close-butt
     }
 }
 
+/* High DPI Screen Optimizations */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    /* High DPI optimizations here */
+}
+
 .boot-sequence.active {
     display: flex !important;
 }
@@ -1575,10 +1719,12 @@ button:hover, .copy-button:hover, .copy-format:hover, .settings-menu .close-butt
     50% { opacity: 0.3; }
 }
 
+/* Add no-animations class */
 .no-animations {
     --animations-enabled: 0;
 }
 
+/* Add class to disable animations in child elements */
 .no-animations .result-item p,
 .no-animations h1,
 .no-animations .app-title,
@@ -1601,6 +1747,7 @@ button:hover, .copy-button:hover, .copy-format:hover, .settings-menu .close-butt
     text-shadow: 0 0 6px var(--pip-glow), 0 0 12px var(--pip-shadow) !important;
 }
 
+/* Global animation disabling */
 .no-animations *, 
 .no-animations *::before, 
 .no-animations *::after {
@@ -1620,19 +1767,101 @@ button:hover, .copy-button:hover, .copy-format:hover, .settings-menu .close-butt
     height: 1.5em;
 }
 
+/* Add to settings menu section at the bottom of the CSS file */
 .effects-toggle {
     margin-top: var(--spacing-sm);
 }
 
+/* Additional setting in the settings menu to control scanline intensity */
 .scanline-option {
     margin-top: var(--spacing-xs);
 }
 
+/* Settings for Pip-Boy specific features */
 .static-noise-option,
 .vault-tec-option {
     margin-top: var(--spacing-xs);
 }
 
+/* Better boot sequence scanlines for smaller screens */
+.boot-sequence::before {
+    background-size: 100% var(--scanline-size), var(--scanline-size) 100% !important;
+}
+
+/* Fix duplicate keyframes - remove these duplicates */
+@keyframes glow {
+    0% { text-shadow: 0 0 5px var(--pip-glow); }
+    50% { text-shadow: 0 0 15px var(--pip-glow), 0 0 20px var(--pip-glow); }
+    100% { text-shadow: 0 0 5px var(--pip-glow); }
+}
+
+@keyframes smooth-scan {
+    0% { transform: translateY(-100%); opacity: calc(var(--scanline-opacity) * 0.8); }
+    45% { opacity: calc(var(--scanline-opacity) * 1); }
+    55% { opacity: calc(var(--scanline-opacity) * 1); }
+    100% { transform: translateY(100%); opacity: calc(var(--scanline-opacity) * 0.8); }
+}
+
+/* Create Fallout-specific scan animation (horizontal sweep) */
+
+/* Update the existing scan keyframes to be used by boot sequence only */
+@keyframes scan {
+    0% { transform: translateY(-100%); opacity: 0.7; }
+    50% { opacity: 0.9; }
+    100% { transform: translateY(100%); opacity: 0.7; }
+}
+
+/* Create a subtle Fallout-style screen flicker */
+@keyframes fallout-flicker {
+    0% { filter: brightness(1); }
+    3% { filter: brightness(1.01); }
+    6% { filter: brightness(0.99); }
+    7% { filter: brightness(1.005); }
+    10% { filter: brightness(1); }
+    80% { filter: brightness(1); }
+    84% { filter: brightness(0.99); }
+    86% { filter: brightness(1.005); }
+    88% { filter: brightness(1); }
+    100% { filter: brightness(1); }
+}
+
+/* Update the no-animations class to handle the new flicker effect too */
+.no-animations .container {
+    animation: none !important;
+}
+
+/* Status indicator with Fallout-style blinking light */
+.status-indicator {
+    position: relative;
+    padding-right: 15px;
+}
+
+.status-indicator::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background-color: var(--pip-green);
+    box-shadow: 0 0 4px var(--pip-glow);
+    animation: status-light-blink calc(2.1s * var(--animations-enabled)) infinite steps(1);
+}
+
+@keyframes status-light-blink {
+    0%, 61%, 70%, 100% { opacity: 1; }
+    60%, 62%, 69%, 71%, 73%, 74%, 90% { opacity: 0.3; }
+    75%, 80% { opacity: 0; }
+}
+
+/* Override the blinking dot in the rate cycle area */
+.season-status::after {
+    display: none !important;
+}
+
+/* Add an additional subtle global scanline effect for authentic Fallout 4 feel */
 html::after {
     content: '';
     position: fixed;
@@ -1663,11 +1892,13 @@ html::after {
     100% { background-position: 0 24px; }
 }
 
+/* Create a new subtle flicker animation that won't affect the border appearance as much */
 @keyframes subtle-flicker {
     0%, 100% { filter: brightness(1); border-color: var(--pip-border); }
     50% { filter: brightness(1.01); border-color: var(--pip-border); }
 }
 
+/* Update the fallout-flicker animation to be more subtle */
 @keyframes fallout-flicker {
     0% { filter: brightness(1); }
     3% { filter: brightness(1.01); }
@@ -1679,6 +1910,178 @@ html::after {
     86% { filter: brightness(1.005); }
     88% { filter: brightness(1); }
     100% { filter: brightness(1); }
+}
+
+/* Apply scanline effects to ALL text elements */
+.result-item p, h1, h2, h3, .app-title, .version-number, label, button, input, .season-status, .load-spread, 
+.result-item span, #transit-days, #delivery-date, #season-status, .status-container, .settings-button, 
+.boot-sequence p, .settings-menu h2, .settings-menu label, .color-option label, .copy-button, .copy-format {
+    position: relative;
+    z-index: 5;
+    text-shadow: 0 0 3px var(--pip-glow);
+    opacity: 0.95;
+}
+
+/* Add specific scanline effect for text elements */
+.result-item p::before, h1::before, h2::before, h3::before, .app-title::before, .version-number::before, 
+label::before, button::before, input::before, .season-status::before, .load-spread::before, 
+.result-item span::before, #transit-days::before, #delivery-date::before, #season-status::before, 
+.status-container::before, .settings-button::before, .boot-sequence p::before, 
+.settings-menu h2::before, .settings-menu label::before, .color-option label::before,
+.copy-button::before, .copy-format::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: repeating-linear-gradient(
+        0deg,
+        rgba(0, 0, 0, 0) 0px,
+        rgba(0, 0, 0, 0) 1px,
+        rgba(0, 0, 0, 0.15) 1px,
+        rgba(0, 0, 0, 0.15) 2px
+    );
+    background-size: 100% 2px;
+    pointer-events: none;
+    z-index: 1;
+    mix-blend-mode: multiply;
+    animation: fallout-text-scan 7s linear infinite;
+    opacity: 0.6;
+}
+
+@keyframes fallout-text-scan {
+    0% { background-position: 0 0; }
+    100% { background-position: 0 12px; }
+}
+
+/* Apply different glow effects to various text elements */
+h1, h2, h3, .app-title, .version-number, #transit-days, #delivery-date, #season-status {
+    text-shadow: 0 0 4px var(--pip-glow), 0 0 6px hsla(var(--pip-hue), var(--pip-saturation), var(--pip-lightness), 0.25);
+    opacity: 0.94;
+    animation: text-glow-pulse 4s infinite ease-in-out;
+}
+
+/* Specific animation just for the most important elements */
+h1, .season-status, #transit-days, #delivery-date {
+    animation: text-glow-pulse-strong 4s infinite ease-in-out;
+}
+
+@keyframes text-glow-pulse {
+    0%, 100% { text-shadow: 0 0 4px var(--pip-glow), 0 0 6px hsla(var(--pip-hue), var(--pip-saturation), var(--pip-lightness), 0.25); }
+    50% { text-shadow: 0 0 5px var(--pip-glow), 0 0 8px hsla(var(--pip-hue), var(--pip-saturation), var(--pip-lightness), 0.35); }
+}
+
+@keyframes text-glow-pulse-strong {
+    0%, 100% { text-shadow: 0 0 5px var(--pip-glow), 0 0 7px hsla(var(--pip-hue), var(--pip-saturation), var(--pip-lightness), 0.3); }
+    50% { text-shadow: 0 0 7px var(--pip-glow), 0 0 10px hsla(var(--pip-hue), var(--pip-saturation), var(--pip-lightness), 0.4); }
+}
+
+/* Remove all container scanlines and effects */
+.container .scanlines,
+.container::before,
+.container::after,
+.input-group::before,
+.input-group::after,
+.result::before,
+.result::after,
+.settings-menu::before,
+.settings-menu::after,
+.color-option::before,
+.color-option::after,
+.preset-colors::before,
+.preset-colors::after {
+    display: none !important;
+}
+
+/* Ensure containers have stable borders */
+.container, .input-group, .result, .settings-menu, .color-option, .preset-colors {
+    border-color: var(--pip-border) !important;
+    background: var(--pip-dark) !important;
+}
+
+/* Fix noise animation rule */
+.noise {
+    animation: noise-animation calc(0.2s * var(--animations-enabled)) infinite steps(2);
+}
+
+/* Remove duplicate keyframes and fix scanline animations */
+@keyframes scanline-drift {
+    0% { background-position: 0 0; }
+    100% { background-position: 0 100%; }
+}
+
+/* Boot sequence specific styles */
+.boot-sequence p {
+    position: relative;
+    z-index: 5;
+}
+
+.boot-sequence p::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: repeating-linear-gradient(
+        0deg,
+        rgba(0, 0, 0, 0) 0px,
+        rgba(0, 0, 0, 0) 1px,
+        rgba(0, 0, 0, 0.2) 1px,
+        rgba(0, 0, 0, 0.2) 2px
+    );
+    background-size: 100% 2px;
+    pointer-events: none;
+    z-index: 1;
+    mix-blend-mode: multiply;
+    animation: fallout-text-scan 7s linear infinite;
+    opacity: 0.6;
+}
+
+/* Fix the retro scanline effect to match the reference image */
+@keyframes terminal-flicker {
+    0% { opacity: 0.01; }
+    40% { opacity: 0.01; }
+    45% { opacity: 0.03; }
+    50% { opacity: 0.05; }
+    55% { opacity: 0.03; }
+    100% { opacity: 0.01; background-position: 200% 0; }
+}
+
+/* Override ALL possible text shadow and color inheritance for peak season */
+.season-status.peak,
+.season-status.peak *,
+.status-container .season-status.peak,
+.result-item .season-status.peak,
+#season-status.peak,
+.season-status.peak span,
+h1 .season-status.peak,
+h2 .season-status.peak,
+h3 .season-status.peak,
+.result-item p .season-status.peak {
+    color: #ff4444 !important;
+    text-shadow: 0 0 4px rgba(255, 0, 0, 0.8),
+                 0 0 8px rgba(255, 0, 0, 0.4),
+                 0 0 12px rgba(255, 0, 0, 0.2) !important;
+    animation: none !important;
+    background: rgba(255, 0, 0, 0.1) !important;
+    border: 1px solid #ff4444 !important;
+}
+
+/* Remove any possible inherited effects */
+.season-status.peak::before,
+.season-status.peak::after {
+    display: none !important;
+}
+
+#transit-days {
+    display: inline-flex;
+    align-items: center;
+    height: 100%;
+    color: var(--pip-green);
+    font-weight: 400;
+    margin-right: 0.5em;  /* Add spacing after the number */
 }
 
 .status-dot {
@@ -1700,6 +2103,7 @@ html::after {
     62%, 63%, 75%, 76%, 82%, 83% { opacity: 0; }
 }
 
+/* Override for no-animations class */
 .no-animations .status-dot {
     animation: none !important;
 }
@@ -1722,4 +2126,81 @@ html::after {
     text-shadow: 0 0 3px var(--pip-glow);
     letter-spacing: 0.5px;
     font-family: 'MonofontoRegular', monospace;
+}
+
+.color-option input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 8px;
+    height: 12px;
+    background: var(--pip-green);
+    border: 1px solid var(--pip-border);
+    cursor: pointer;
+    box-shadow: 0 0 5px var(--pip-glow);
+    border-radius: 0;
+    margin-top: 0;
+}
+
+.color-option input[type="range"]::-moz-range-thumb {
+    width: 8px;
+    height: 12px;
+    background: var(--pip-green);
+    border: 1px solid var(--pip-border);
+    cursor: pointer;
+    box-shadow: 0 0 5px var(--pip-glow);
+    border-radius: 0;
+}
+
+/* Apply consistent glow to all text elements */
+.result-item p, h1, h2, h3, .app-title, .version-number, label, button, input, .season-status, .load-spread, 
+.result-item span, #transit-days, #delivery-date, #season-status, .status-container, .settings-button, 
+.boot-sequence p, .settings-menu h2, .settings-menu label, .color-option label {
+    text-shadow: 0 0 2px var(--pip-glow), 0 0 4px hsla(var(--pip-hue), var(--pip-saturation), var(--pip-lightness), 0.2);
+    opacity: 0.98;
+    animation: settings-glow-pulse 4s infinite ease-in-out;
+}
+
+/* Keep copy buttons and formats with their original style */
+.copy-button, .copy-format {
+    text-shadow: 0 0 3px var(--pip-glow);
+    opacity: 0.95;
+    animation: none;
+}
+
+/* Update the glow pulse animation to be used globally */
+@keyframes settings-glow-pulse {
+    0%, 100% { text-shadow: 0 0 2px var(--pip-glow), 0 0 4px hsla(var(--pip-hue), var(--pip-saturation), var(--pip-lightness), 0.2); }
+    50% { text-shadow: 0 0 3px var(--pip-glow), 0 0 6px hsla(var(--pip-hue), var(--pip-saturation), var(--pip-lightness), 0.25); }
+}
+
+/* Remove old text glow animations */
+@keyframes text-glow-pulse {
+    0%, 100% { text-shadow: 0 0 2px var(--pip-glow), 0 0 4px hsla(var(--pip-hue), var(--pip-saturation), var(--pip-lightness), 0.2); }
+    50% { text-shadow: 0 0 3px var(--pip-glow), 0 0 6px hsla(var(--pip-hue), var(--pip-saturation), var(--pip-lightness), 0.25); }
+}
+
+@keyframes text-glow-pulse-strong {
+    0%, 100% { text-shadow: 0 0 2px var(--pip-glow), 0 0 4px hsla(var(--pip-hue), var(--pip-saturation), var(--pip-lightness), 0.2); }
+    50% { text-shadow: 0 0 3px var(--pip-glow), 0 0 6px hsla(var(--pip-hue), var(--pip-saturation), var(--pip-lightness), 0.25); }
+}
+
+/* Override specific elements that need stronger glow */
+h1, .season-status, #transit-days, #delivery-date {
+    text-shadow: 0 0 2px var(--pip-glow), 0 0 4px hsla(var(--pip-hue), var(--pip-saturation), var(--pip-lightness), 0.25);
+    animation: settings-glow-pulse 4s infinite ease-in-out;
+}
+
+/* Keep the peak/non-peak season status styles */
+.season-status.peak,
+.season-status.peak * {
+    text-shadow: 0 0 2px rgba(255, 0, 0, 0.8),
+                 0 0 4px rgba(255, 0, 0, 0.4),
+                 0 0 6px rgba(255, 0, 0, 0.2) !important;
+}
+
+.season-status.non-peak,
+.season-status.non-peak * {
+    text-shadow: 0 0 2px rgba(0, 255, 0, 0.8),
+                 0 0 4px rgba(0, 255, 0, 0.4),
+                 0 0 6px rgba(0, 255, 0, 0.2) !important;
 }
