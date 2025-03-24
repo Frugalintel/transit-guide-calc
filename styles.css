@@ -385,6 +385,7 @@ input:focus {
     outline: none;
     border-color: var(--pip-green);
     background-color: hsla(calc(var(--pip-hue) + 180), 20%, 6%, 0.95);
+    /* Glow only applied if filled */
 }
 
 /* Filled state with glow */
@@ -399,7 +400,7 @@ input[type="date"]::-webkit-datetime-edit,
 input[type="date"]::-webkit-datetime-edit-year-field,
 input[type="date"]::-webkit-datetime-edit-month-field,
 input[type="date"]::-webkit-datetime-edit-day-field {
-    color: #666;
+    color: #666; /* Default grey */
 }
 
 /* Filled date inputs */
