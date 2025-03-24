@@ -444,9 +444,9 @@ input[type="date"]::-webkit-datetime-edit-day-field {
 
 /* Filled date inputs with .filled class */
 input[type="date"].filled::-webkit-datetime-edit,
-input[type="date].filled::-webkit-datetime-edit-year-field,
-input[type="date].filled::-webkit-datetime-edit-month-field,
-input[type="date].filled::-webkit-datetime-edit-day-field {
+input[type="date"].filled::-webkit-datetime-edit-year-field,
+input[type="date"].filled::-webkit-datetime-edit-month-field,
+input[type="date"].filled::-webkit-datetime-edit-day-field {
     color: var(--pip-green);
 }
 
@@ -461,22 +461,22 @@ input[type="date"]::-webkit-datetime-edit-day-field {
 
 /* Ensure glow applies only to filled date inputs */
 input[type="date"].filled::-webkit-datetime-edit,
-input[type="date].filled::-webkit-datetime-edit-year-field,
-input[type="date].filled::-webkit-datetime-edit-month-field,
-input[type="date].filled::-webkit-datetime-edit-day-field {
+input[type="date"].filled::-webkit-datetime-edit-year-field,
+input[type="date"].filled::-webkit-datetime-edit-month-field,
+input[type="date"].filled::-webkit-datetime-edit-day-field {
     text-shadow: 0 0 2px var(--pip-glow), 0 0 4px hsla(var(--pip-hue), var(--pip-saturation), var(--pip-lightness), 0.2);
 }
 
-/* Remove glow from unfilled number inputs with higher specificity */
-input[type="number"]:not(:valid) {
-    text-shadow: none !important;
-    color: #666; /* Explicitly grey when unfilled */
+/* Remove glow from unfilled number inputs and set default grey color */
+input[type="number"] {
+    text-shadow: none;
+    color: #666; /* Explicitly set grey for unfilled state */
 }
 
 /* Apply glow to filled number inputs */
 input[type="number"]:valid {
     text-shadow: 0 0 2px var(--pip-glow), 0 0 4px hsla(var(--pip-hue), var(--pip-saturation), var(--pip-lightness), 0.2);
-    color: var(--pip-green);
+    color: var(--pip-green); /* Already in your CSS, repeated for clarity */
 }
 /* NEW FIX ENDS HERE */
 
