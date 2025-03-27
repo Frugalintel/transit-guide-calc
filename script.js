@@ -2,7 +2,7 @@
 window.addEventListener('DOMContentLoaded', function() {
     const packDateInput = document.getElementById('packDate');
     const loadDateInput = document.getElementById('loadDate');
-    const settingsButton = document.querySelector('.settings-button'); // Ensure this is inside DOMContentLoaded
+    const settingsButton = document.querySelector('.settings-button');
 
     // Initialize season status with placeholder class
     const seasonStatusElement = document.getElementById('season-status');
@@ -11,6 +11,7 @@ window.addEventListener('DOMContentLoaded', function() {
     }
 
     function triggerDatePicker(input) {
+        if (!input) return;
         input.addEventListener('click', () => {
             if (typeof input.showPicker === 'function') {
                 try {
@@ -29,6 +30,7 @@ window.addEventListener('DOMContentLoaded', function() {
 
     // Function to update date input color class
     function updateDateInputColor(input) {
+        if (!input) return;
         if (input.value) {
             input.classList.add('filled');
         } else {
@@ -41,17 +43,21 @@ window.addEventListener('DOMContentLoaded', function() {
     updateDateInputColor(loadDateInput);
 
     // Listen for changes
-    packDateInput.addEventListener('input', () => updateDateInputColor(packDateInput));
-    loadDateInput.addEventListener('input', () => updateDateInputColor(loadDateInput));
+    if (packDateInput) {
+        packDateInput.addEventListener('input', () => updateDateInputColor(packDateInput));
+    }
+    if (loadDateInput) {
+        loadDateInput.addEventListener('input', () => updateDateInputColor(loadDateInput));
+    }
 
     const urlParams = new URLSearchParams(window.location.search);
     
-    if (urlParams.has('packDate')) {
-        document.getElementById('packDate').value = urlParams.get('packDate');
+    if (urlParams.has('packDate') && packDateInput) {
+        packDateInput.value = urlParams.get('packDate');
         updateDateInputColor(packDateInput);
     }
-    if (urlParams.has('loadDate')) {
-        document.getElementById('loadDate').value = urlParams.get('loadDate');
+    if (urlParams.has('loadDate') && loadDateInput) {
+        loadDateInput.value = urlParams.get('loadDate');
         updateDateInputColor(loadDateInput);
     }
     if (urlParams.has('weight')) {
@@ -66,6 +72,7 @@ window.addEventListener('DOMContentLoaded', function() {
     }
 
     function validateDates() {
+        if (!packDateInput || !loadDateInput) return;
         const packDate = packDateInput.value ? new Date(packDateInput.value) : null;
         const loadDate = loadDateInput.value ? new Date(loadDateInput.value) : null;
 
@@ -75,14 +82,18 @@ window.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    packDateInput.addEventListener('change', () => {
-        validateDates();
-        updateDateInputColor(packDateInput);
-    });
-    loadDateInput.addEventListener('change', () => {
-        validateDates();
-        updateDateInputColor(loadDateInput);
-    });
+    if (packDateInput) {
+        packDateInput.addEventListener('change', () => {
+            validateDates();
+            updateDateInputColor(packDateInput);
+        });
+    }
+    if (loadDateInput) {
+        loadDateInput.addEventListener('change', () => {
+            validateDates();
+            updateDateInputColor(loadDateInput);
+        });
+    }
 
     // Fallout-style boot sequence
     const bootSequence = document.querySelector('.boot-sequence');
@@ -92,6 +103,13 @@ window.addEventListener('DOMContentLoaded', function() {
         bootSequence.classList.add('active');
         
         const bootTexts = bootSequence.querySelectorAll('.boot-content p');
+        if (!bootTexts.length) {
+            console.warn('No boot text elements found');
+            bootSequence.classList.remove('active');
+            calculator.classList.remove('hidden');
+            return;
+        }
+
         let currentText = 0;
         let isSkippable = true;
         let isTyping = false;
@@ -207,9 +225,11 @@ window.addEventListener('DOMContentLoaded', function() {
         }
         
         typeNextText();
+    } else {
+        console.warn('Boot sequence or calculator elements missing');
     }
 
-    // Settings button listener inside DOMContentLoaded
+    // Settings button listener
     if (settingsButton) {
         settingsButton.addEventListener('click', () => {
             const settingsMenu = document.querySelector('.settings-menu');
@@ -244,7 +264,26 @@ window.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-function copyForSpreadsheet() {
+// Utility function for clipboard fallback
+function copyToClipboardFallback(text) {
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.position = 'fixed';
+    textArea.style.opacity = '0';
+    document.body.appendChild(textArea);
+    textArea.select();
+    try {
+        document.execCommand('copy');
+        return true;
+    } catch (err) {
+        console.error('Fallback copy failed:', err);
+        return false;
+    } finally {
+        document.body.removeChild(textArea);
+    }
+}
+
+async function copyForSpreadsheet() {
     const packDate = document.getElementById('packDate').value;
     const loadDate = document.getElementById('loadDate').value;
     const weight = document.getElementById('weight').value;
@@ -262,22 +301,9 @@ function copyForSpreadsheet() {
     
     try {
         if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(data);
+            await navigator.clipboard.writeText(data);
         } else {
-            const textArea = document.createElement('textarea');
-            textArea.value = data;
-            textArea.style.position = 'fixed';
-            document.body.appendChild(textArea);
-            textArea.focus();
-            textArea.select();
-            
-            try {
-                document.execCommand('copy');
-            } catch (err) {
-                console.error('Fallback: Could not copy text: ', err);
-            }
-            
-            document.body.removeChild(textArea);
+            copyToClipboardFallback(data);
         }
         
         const copyButton = document.getElementById('copy-spreadsheet');
@@ -320,7 +346,7 @@ const transitGuide = {
         [15, 18, 20, 22, 21, 22, 23, 25, 26, 27, 28, 29, 39],
         [14, 15, 18, 19, 19, 20, 21, 22, 24, 25, 26, 27, 41],
         [12, 14, 17, 18, 18, 19, 20, 21, 22, 23, 24, 25, 40],
-        [11, 12, 15, 16, 17, 18, 19, 20, 21, 22, 23, 23, 43]
+        [11, 12, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 43] // Corrected 23 to 24 for 2751-3000 miles
     ]
 };
 
@@ -349,8 +375,10 @@ function isBusinessDay(date) {
 }
 
 function createDateFromInput(dateString) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+        throw new Error('Invalid date format');
+    }
     const [year, month, day] = dateString.split('-').map(num => parseInt(num, 10));
-    // Create date object without time component to avoid timezone issues
     return new Date(year, month - 1, day);
 }
 
@@ -435,22 +463,10 @@ async function copyDates() {
         }, 2000);
     } catch (err) {
         console.error('Failed to copy text:', err);
-        // Fallback to older method
-        const textarea = document.createElement('textarea');
-        textarea.value = text;
-        textarea.style.position = 'fixed';
-        textarea.style.opacity = '0';
-        document.body.appendChild(textarea);
-        textarea.select();
-        try {
-            document.execCommand('copy');
-            const copyButton = document.getElementById('copy-dates');
-            copyButton.classList.add('copied');
-            setTimeout(() => copyButton.classList.remove('copied'), 2000);
-        } catch (err) {
-            console.error('Fallback: Could not copy text:', err);
-        }
-        document.body.removeChild(textarea);
+        copyToClipboardFallback(text);
+        const copyButton = document.getElementById('copy-dates');
+        copyButton.classList.add('copied');
+        setTimeout(() => copyButton.classList.remove('copied'), 2000);
     }
 }
 
@@ -542,8 +558,24 @@ function calculateTransitTime() {
 
     currentRDD = null;
 
-    if (!weight || !distance || !loadDateStr || weight <= 0 || distance <= 0) {
-        resultElement.textContent = 'Invalid input';
+    if (!weight || weight <= 0) {
+        resultElement.textContent = 'Weight must be positive';
+        deliveryDateElement.textContent = '--';
+        loadSpreadElement.textContent = '--';
+        resetSeasonStatus();
+        return;
+    }
+
+    if (!distance || distance <= 0) {
+        resultElement.textContent = 'Distance must be positive';
+        deliveryDateElement.textContent = '--';
+        loadSpreadElement.textContent = '--';
+        resetSeasonStatus();
+        return;
+    }
+
+    if (!loadDateStr) {
+        resultElement.textContent = 'Load date required';
         deliveryDateElement.textContent = '--';
         loadSpreadElement.textContent = '--';
         resetSeasonStatus();
@@ -596,64 +628,84 @@ const scanlineSlider = document.getElementById('scanline-intensity');
 const container = document.querySelector('.container');
 
 function loadSavedSettings() {
-    // Load color settings
-    const savedColors = localStorage.getItem('pipBoyColors');
-    if (savedColors) {
-        const { hue, saturation, lightness } = JSON.parse(savedColors);
-        root.style.setProperty('--pip-hue', hue);
-        root.style.setProperty('--pip-saturation', `${saturation}%`);
-        root.style.setProperty('--pip-lightness', `${lightness}%`);
+    try {
+        // Load color settings
+        const savedColors = localStorage.getItem('pipBoyColors');
+        if (savedColors) {
+            const { hue, saturation, lightness } = JSON.parse(savedColors);
+            root.style.setProperty('--pip-hue', hue);
+            root.style.setProperty('--pip-saturation', `${saturation}%`);
+            root.style.setProperty('--pip-lightness', `${lightness}%`);
+            
+            hueSlider.value = hue;
+            saturationSlider.value = saturation;
+            lightnessSlider.value = lightness;
+            
+            updateColorPreview();
+        }
         
-        hueSlider.value = hue;
-        saturationSlider.value = saturation;
-        lightnessSlider.value = lightness;
+        // Load format visibility setting
+        const showFormat = localStorage.getItem('showFormatOption');
+        if (showFormat !== null) {
+            const shouldShow = showFormat === 'true';
+            updateToggleState('show-format-toggle', shouldShow);
+            toggleFormatVisibility(shouldShow);
+        }
         
-        updateColorPreview();
-    }
-    
-    // Load format visibility setting
-    const showFormat = localStorage.getItem('showFormatOption');
-    if (showFormat !== null) {
-        const shouldShow = showFormat === 'true';
-        updateToggleState('show-format-toggle', shouldShow);
-        toggleFormatVisibility(shouldShow);
-    }
-    
-    // Load animations setting
-    const animationsEnabled = localStorage.getItem('animationsEnabled');
-    if (animationsEnabled !== null) {
-        const enabled = animationsEnabled === 'true';
-        updateToggleState('animations-toggle', enabled);
-        toggleAnimations(enabled);
-    }
-    
-    // Load scanline intensity setting
-    const scanlineIntensity = localStorage.getItem('scanlineIntensity');
-    if (scanlineIntensity !== null) {
-        scanlineSlider.value = scanlineIntensity;
-        updateScanlineIntensity(scanlineIntensity);
+        // Load animations setting
+        const animationsEnabled = localStorage.getItem('animationsEnabled');
+        if (animationsEnabled !== null) {
+            const enabled = animationsEnabled === 'true';
+            updateToggleState('animations-toggle', enabled);
+            toggleAnimations(enabled);
+        }
+        
+        // Load scanline intensity setting
+        const scanlineIntensity = localStorage.getItem('scanlineIntensity');
+        if (scanlineIntensity !== null) {
+            scanlineSlider.value = scanlineIntensity;
+            updateScanlineIntensity(scanlineIntensity);
+        }
+    } catch (e) {
+        console.warn('localStorage unavailable, using defaults:', e);
     }
 }
 
 function saveColors() {
-    const colors = {
-        hue: parseInt(hueSlider.value),
-        saturation: parseInt(saturationSlider.value),
-        lightness: parseInt(lightnessSlider.value)
-    };
-    localStorage.setItem('pipBoyColors', JSON.stringify(colors));
+    try {
+        const colors = {
+            hue: parseInt(hueSlider.value),
+            saturation: parseInt(saturationSlider.value),
+            lightness: parseInt(lightnessSlider.value)
+        };
+        localStorage.setItem('pipBoyColors', JSON.stringify(colors));
+    } catch (e) {
+        console.warn('Failed to save colors to localStorage:', e);
+    }
 }
 
 function saveFormatVisibility(isVisible) {
-    localStorage.setItem('showFormatOption', isVisible);
+    try {
+        localStorage.setItem('showFormatOption', isVisible);
+    } catch (e) {
+        console.warn('Failed to save format visibility to localStorage:', e);
+    }
 }
 
 function saveAnimationsState(isEnabled) {
-    localStorage.setItem('animationsEnabled', isEnabled);
+    try {
+        localStorage.setItem('animationsEnabled', isEnabled);
+    } catch (e) {
+        console.warn('Failed to save animations state to localStorage:', e);
+    }
 }
 
 function saveScanlineIntensity(intensity) {
-    localStorage.setItem('scanlineIntensity', intensity);
+    try {
+        localStorage.setItem('scanlineIntensity', intensity);
+    } catch (e) {
+        console.warn('Failed to save scanline intensity to localStorage:', e);
+    }
 }
 
 function toggleFormatVisibility(isVisible) {
@@ -677,13 +729,12 @@ function toggleAnimations(isEnabled) {
     // Force a repaint to ensure animations are toggled
     const currentDisplay = container.style.display;
     container.style.display = 'none';
-    // This line forces a repaint
     void container.offsetHeight;
     container.style.display = currentDisplay;
 }
 
 function updateScanlineIntensity(intensity) {
-    // Convert 0-100 range to 0-0.7 for opacity (increased from 0.5)
+    // Convert 0-100 range to 0-0.7 for opacity
     const opacity = (intensity / 100) * 0.7;
     root.style.setProperty('--scanline-opacity', opacity.toFixed(2));
 }
@@ -806,12 +857,14 @@ function createDropdownArrow() {
         arrow.style.borderRight = '5px solid transparent';
         arrow.style.borderTop = '5px solid var(--pip-green)';
         arrow.style.pointerEvents = 'none';
+        arrow.setAttribute('aria-hidden', 'true'); // Accessibility
         
         // Add arrow to wrapper
         wrapper.appendChild(arrow);
         
         // Update select styling
         select.style.backgroundImage = 'none';
+        select.setAttribute('aria-label', 'Copy format selection'); // Accessibility
     });
 }
 
